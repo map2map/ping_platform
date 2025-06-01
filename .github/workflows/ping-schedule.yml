@@ -1,0 +1,26 @@
+# .github/workflows/ping-schedule.yml
+name: Ping Platform Every 10 Minutes
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'  # every 10 minutes (UTC)
+
+jobs:
+  ping-nim:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Nim
+        uses: jiro4989/setup-nim-action@v2
+        with:
+          nim-version: 'stable'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Compile ping program
+        run: nim compile --verbosity:0 --hints:off ping_once.nim
+
+      - name: Run ping program
+        run: ./ping_once
