@@ -2,7 +2,7 @@
 name: Ping Platform (Scheduled + On-Demand)
 
 on:
-  workflow_dispatch:        # allows “Run workflow” button in Actions UI
+  workflow_dispatch:        # “Run workflow” button in Actions UI
   schedule:
     - cron: '*/10 * * * *'  # every 10 minutes (UTC)
 
@@ -20,8 +20,11 @@ jobs:
           nim-version: 'stable'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Compile ping program
-        run: nim compile --verbosity:0 --hints:off ping_once.nim
+      - name: Install OpenSSL dev (for SSL support)
+        run: sudo apt-get update && sudo apt-get install -y libssl-dev
+
+      - name: Compile ping program with SSL
+        run: nim compile --verbosity:0 --hints:off -d:ssl ping_once.nim
 
       - name: Run ping program
         run: ./ping_once
